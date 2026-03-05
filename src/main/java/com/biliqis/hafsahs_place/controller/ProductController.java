@@ -1,7 +1,9 @@
 package com.biliqis.hafsahs_place.controller;
 
+import com.biliqis.hafsahs_place.dto.ProductRequest;
 import com.biliqis.hafsahs_place.model.Product;
 import com.biliqis.hafsahs_place.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*")
-public class ProductController {
+public class
+ProductController {
 
     @Autowired
     private ProductService productService;
@@ -90,8 +92,8 @@ public class ProductController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product createdProduct = productService.createProduct(product);
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductRequest request) {
+        Product createdProduct = productService.createProduct(request);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
