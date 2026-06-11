@@ -1,0 +1,918 @@
+{
+  "info": {
+    "name": "Hafsah's Place API",
+    "description": "End-to-end API testing for Hafsah's Place e-commerce backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "orderId", "value": "" },
+    { "key": "orderNumber", "value": "" },
+    { "key": "customOrderId", "value": "" },
+    { "key": "customOrderNumber", "value": "" },
+    { "key": "paymentReference", "value": "" },
+    { "key": "reviewId", "value": "" },
+    { "key": "measurementId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('token', res.token);",
+                  "pm.collectionVariables.set('userId', res.id);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has token', () => pm.expect(res.token).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Aisha\",\n  \"lastName\": \"Bello\",\n  \"email\": \"aisha@test.com\",\n  \"password\": \"password123\",\n  \"phoneNumber\": \"08012345678\",\n  \"address\": \"12 Marina Street\",\n  \"city\": \"Lagos\",\n  \"state\": \"Lagos\",\n  \"country\": \"Nigeria\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('token', res.token);",
+                  "pm.collectionVariables.set('userId', res.id);",
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has token', () => pm.expect(res.token).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aisha@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Admin (requires admin token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('adminToken', res.token);",
+                  "}",
+                  "pm.test('Status is 201 or 403', () => [201, 403].includes(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/register/admin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@hafsahsplace.com\",\n  \"password\": \"admin123456\",\n  \"phoneNumber\": \"08099999999\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('adminToken', res.token);",
+                  "}",
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hafsahsplace.com\",\n  \"password\": \"admin123456\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. User Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const res = pm.response.json();",
+                  "pm.test('Has email', () => pm.expect(res.email).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/users/me"
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const res = pm.response.json();",
+                  "pm.test('Phone updated', () => pm.expect(res.phoneNumber).to.eql('08098765432'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/users/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"08098765432\",\n  \"address\": \"25 Admiralty Way, Lekki\",\n  \"city\": \"Lagos\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const res = pm.response.json();",
+                  "if (Array.isArray(res) && res.length > 0) {",
+                  "  pm.collectionVariables.set('categoryId', res[0].id);",
+                  "} else if (res.content && res.content.length > 0) {",
+                  "  pm.collectionVariables.set('categoryId', res.content[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Products",
+      "item": [
+        {
+          "name": "Create Product (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('productId', res.id);",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aurora Evening Gown\",\n  \"description\": \"Stunning silk satin evening gown with hand-sewn lace details\",\n  \"basePrice\": 185000.00,\n  \"categoryId\": {{categoryId}},\n  \"isCustomizable\": true,\n  \"isFeatured\": true,\n  \"isAvailable\": true,\n  \"slug\": \"aurora-evening-gown\",\n  \"sku\": \"HP-EVE-001\",\n  \"fabricType\": \"Silk Satin\",\n  \"careInstructions\": \"Dry clean only\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const res = pm.response.json();",
+                  "if (res.content && res.content.length > 0) {",
+                  "  pm.collectionVariables.set('productId', res.content[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/products?page=0&size=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/{{productId}}"
+          }
+        },
+        {
+          "name": "Get Product by Slug",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/slug/aurora-evening-gown"
+          }
+        },
+        {
+          "name": "Get Featured Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/featured"
+          }
+        },
+        {
+          "name": "Get Latest Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/latest"
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/products/search?keyword=aurora",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "search"],
+              "query": [{ "key": "keyword", "value": "aurora" }]
+            }
+          }
+        },
+        {
+          "name": "Get Products by Category",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/category/{{categoryId}}"
+          }
+        },
+        {
+          "name": "Update Product (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/products/{{productId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"basePrice\": 195000.00,\n  \"isFeatured\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Measurements",
+      "item": [
+        {
+          "name": "Save Measurement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('measurementId', res.id);",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/measurements",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bust\": 91.50,\n  \"waist\": 71.00,\n  \"hips\": 99.00,\n  \"shoulderWidth\": 40.00,\n  \"armLength\": 58.50,\n  \"dressLength\": 140.00,\n  \"neckCircumference\": 35.00,\n  \"unit\": \"cm\",\n  \"notes\": \"Prefer slightly loose fit around waist\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Measurements",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/measurements"
+          }
+        },
+        {
+          "name": "Get Measurement by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/measurements/{{measurementId}}"
+          }
+        },
+        {
+          "name": "Update Measurement",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/measurements/{{measurementId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"waist\": 72.50,\n  \"notes\": \"Updated waist measurement\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Orders",
+      "item": [
+        {
+          "name": "Place Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('orderId', res.id);",
+                  "  pm.collectionVariables.set('orderNumber', res.orderNumber);",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has order number', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.orderNumber).to.match(/^HP-\\d{8}-[A-Z0-9]{6}$/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 1,\n      \"specialInstructions\": \"Please add extra lace trim\"\n    }\n  ],\n  \"shippingAddress\": \"25 Admiralty Way, Lekki Phase 1\",\n  \"shippingCity\": \"Lagos\",\n  \"shippingState\": \"Lagos\",\n  \"shippingPhone\": \"08012345678\",\n  \"notes\": \"Please call before delivery\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has content', () => pm.expect(pm.response.json().content).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/orders"
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/orders/{{orderId}}"
+          }
+        },
+        {
+          "name": "Track Order by Number (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct order', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.orderNumber).to.eql(pm.collectionVariables.get('orderNumber'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders/track/{{orderNumber}}"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is CANCELLED', () => {",
+                  "  pm.expect(pm.response.json().status).to.eql('CANCELLED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/orders/{{orderId}}/cancel"
+          }
+        },
+        {
+          "name": "Place Order (for payment test)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('orderId', res.id);",
+                  "  pm.collectionVariables.set('orderNumber', res.orderNumber);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 2\n    }\n  ],\n  \"shippingAddress\": \"10 Ozumba Mbadiwe Avenue, VI\",\n  \"shippingCity\": \"Lagos\",\n  \"shippingState\": \"Lagos\",\n  \"shippingPhone\": \"08012345678\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[Admin] Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/orders/admin/all"
+          }
+        },
+        {
+          "name": "[Admin] Get Orders by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/orders/admin/status/PENDING"
+          }
+        },
+        {
+          "name": "[Admin] Update Order Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status updated', () => {",
+                  "  pm.expect(pm.response.json().status).to.eql('CONFIRMED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/admin/{{orderId}}/status?status=CONFIRMED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "admin", "{{orderId}}", "status"],
+              "query": [{ "key": "status", "value": "CONFIRMED" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Payments",
+      "item": [
+        {
+          "name": "Initialize Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('paymentReference', res.paymentReference);",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/payments/initialize",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": {{orderId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/payments/verify/{{paymentReference}}"
+          }
+        },
+        {
+          "name": "Get Payment by Reference",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/payments/{{paymentReference}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Reviews",
+      "item": [
+        {
+          "name": "Create Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('reviewId', res.id);",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/reviews",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"rating\": 5,\n  \"title\": \"Absolutely stunning!\",\n  \"comment\": \"The craftsmanship is impeccable. The silk satin fabric feels luxurious and the lace details are beautiful.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Product Reviews (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has content', () => pm.expect(pm.response.json().content).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reviews/product/{{productId}}"
+          }
+        },
+        {
+          "name": "Get Review Summary (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const res = pm.response.json();",
+                  "pm.test('Has averageRating', () => pm.expect(res).to.have.property('averageRating'));",
+                  "pm.test('Has totalReviews', () => pm.expect(res).to.have.property('totalReviews'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reviews/product/{{productId}}/summary"
+          }
+        },
+        {
+          "name": "Delete Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/reviews/{{reviewId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Custom Orders",
+      "item": [
+        {
+          "name": "Create Custom Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('customOrderId', res.id);",
+                  "  pm.collectionVariables.set('customOrderNumber', res.orderNumber);",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has order number', () => {",
+                  "  pm.expect(pm.response.json().orderNumber).to.match(/^HPC-/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/custom-orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": {{categoryId}},\n  \"designDescription\": \"I want a floor-length aso-ebi dress in teal green with gold embroidery. Off-shoulder neckline with bell sleeves.\",\n  \"measurementId\": {{measurementId}},\n  \"preferredFabric\": \"George fabric\",\n  \"preferredColor\": \"Teal Green\",\n  \"budgetRange\": \"150000-250000\",\n  \"eventDate\": \"2026-07-15\",\n  \"notes\": \"The event is a wedding reception, I want to stand out!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Custom Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/custom-orders"
+          }
+        },
+        {
+          "name": "Get Custom Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/custom-orders/{{customOrderId}}"
+          }
+        },
+        {
+          "name": "Track Custom Order (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/custom-orders/track/{{customOrderNumber}}"
+          }
+        },
+        {
+          "name": "[Admin] Get All Custom Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/custom-orders/admin/all"
+          }
+        },
+        {
+          "name": "[Admin] Set Price Quote",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Price set', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.estimatedPrice).to.eql(200000.00);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/custom-orders/admin/{{customOrderId}}/price?estimatedPrice=200000.00",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "custom-orders", "admin", "{{customOrderId}}", "price"],
+              "query": [{ "key": "estimatedPrice", "value": "200000.00" }]
+            }
+          }
+        },
+        {
+          "name": "[Admin] Update Custom Order Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status updated', () => {",
+                  "  pm.expect(pm.response.json().status).to.eql('QUOTE_SENT');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/custom-orders/admin/{{customOrderId}}/status?status=QUOTE_SENT",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "custom-orders", "admin", "{{customOrderId}}", "status"],
+              "query": [{ "key": "status", "value": "QUOTE_SENT" }]
+            }
+          }
+        },
+        {
+          "name": "Cancel Custom Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Cancelled', () => {",
+                  "  pm.expect(pm.response.json().status).to.eql('CANCELLED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/custom-orders/{{customOrderId}}/cancel"
+          }
+        }
+      ]
+    }
+  ]
+}

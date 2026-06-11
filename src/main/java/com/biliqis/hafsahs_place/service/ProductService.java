@@ -1,7 +1,11 @@
 package com.biliqis.hafsahs_place.service;
 
+import com.biliqis.hafsahs_place.dto.ProductRequest;
+import com.biliqis.hafsahs_place.dto.ProductUpdateRequest;
 import com.biliqis.hafsahs_place.exception.ResourceNotFoundException;
+import com.biliqis.hafsahs_place.model.Category;
 import com.biliqis.hafsahs_place.model.Product;
+import com.biliqis.hafsahs_place.repository.CategoryRepository;
 import com.biliqis.hafsahs_place.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
@@ -34,12 +41,12 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
-        return productRepository.findById(id)
+        return productRepository.findByIdWithImages(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
     }
 
     public Product getProductBySlug(String slug) {
-        return productRepository.findBySlug(slug)
+        return productRepository.findBySlugWithImages(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "slug", slug));
     }
 
@@ -52,23 +59,67 @@ public class ProductService {
     }
 
     @Transactional
-    public Product createProduct(Product product) {
+    public Product createProduct(ProductRequest request) {
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
+
+        Product product = Product.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .basePrice(request.getBasePrice())
+                .category(category)
+                .isCustomizable(request.getIsCustomizable())
+                .isFeatured(request.getIsFeatured())
+                .isAvailable(request.getIsAvailable())
+                .slug(request.getSlug())
+                .sku(request.getSku())
+                .fabricType(request.getFabricType())
+                .careInstructions(request.getCareInstructions())
+                .build();
+
         return productRepository.save(product);
     }
 
     @Transactional
-    public Product updateProduct(Long id, Product productDetails) {
+    public Product updateProduct(Long id, ProductUpdateRequest request) {
         Product product = getProductById(id);
 
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setBasePrice(productDetails.getBasePrice());
-        product.setCategory(productDetails.getCategory());
-        product.setIsCustomizable(productDetails.getIsCustomizable());
-        product.setIsFeatured(productDetails.getIsFeatured());
-        product.setIsAvailable(productDetails.getIsAvailable());
-        product.setFabricType(productDetails.getFabricType());
-        product.setCareInstructions(productDetails.getCareInstructions());
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
+            product.setCategory(category);
+        }
+
+        if (request.getName() != null) {
+            product.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            product.setDescription(request.getDescription());
+        }
+        if (request.getBasePrice() != null) {
+            product.setBasePrice(request.getBasePrice());
+        }
+        if (request.getIsCustomizable() != null) {
+            product.setIsCustomizable(request.getIsCustomizable());
+        }
+        if (request.getIsFeatured() != null) {
+            product.setIsFeatured(request.getIsFeatured());
+        }
+        if (request.getIsAvailable() != null) {
+            product.setIsAvailable(request.getIsAvailable());
+        }
+        if (request.getSlug() != null) {
+            product.setSlug(request.getSlug());
+        }
+        if (request.getSku() != null) {
+            product.setSku(request.getSku());
+        }
+        if (request.getFabricType() != null) {
+            product.setFabricType(request.getFabricType());
+        }
+        if (request.getCareInstructions() != null) {
+            product.setCareInstructions(request.getCareInstructions());
+        }
 
         return productRepository.save(product);
     }

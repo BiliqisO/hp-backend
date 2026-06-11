@@ -2,10 +2,22 @@
 
 A comprehensive Spring Boot backend for a Lagos-based fashion e-commerce platform specializing in Asoebi, Bridal wear, Prom dresses, and custom designs.
 
+## Table of Contents
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Setup Instructions](#setup-instructions)
+- [Admin Authentication](#admin-authentication)
+- [API Endpoints](#api-endpoints)
+- [Example Requests](#example-requests)
+- [Project Structure](#project-structure)
+- [Security Considerations](#security-considerations)
+- [Troubleshooting](#troubleshooting)
+
 ## Tech Stack
 
-- **Java 24**
-- **Spring Boot 4.0.3**
+- **Java 17** (compiled with Java 25)
+- **Spring Boot 3.3.0**
 - **PostgreSQL** - Primary database
 - **Spring Data JPA** - ORM
 - **Spring Security + JWT** - Authentication & Authorization
@@ -13,6 +25,7 @@ A comprehensive Spring Boot backend for a Lagos-based fashion e-commerce platfor
 - **Cloudinary** - Image storage
 - **Paystack** - Payment processing
 - **Lombok** - Boilerplate reduction
+- **Maven** - Build tool
 
 ## Features
 
@@ -32,6 +45,32 @@ A comprehensive Spring Boot backend for a Lagos-based fashion e-commerce platfor
 - **ADMIN** - Full access to manage products, orders, and users
 - **DESIGNER** - Handle custom order requests
 
+## Quick Start
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd hafsahs-place
+
+# 2. Create PostgreSQL database
+createdb hafsahsplace
+
+# 3. Configure application.properties (see Setup Instructions)
+
+# 4. Build and run
+./mvnw clean install
+./mvnw spring-boot:run
+
+# 5. Test admin login
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@hafsahsplace.com","password":"Admin@123"}'
+```
+
+Default admin credentials:
+- Email: `admin@hafsahsplace.com`
+- Password: `Admin@123`
+
 ## Database Schema
 
 The application uses PostgreSQL with the following main entities:
@@ -48,9 +87,10 @@ The application uses PostgreSQL with the following main entities:
 ## Setup Instructions
 
 ### Prerequisites
-- Java 24+
+- Java 17+ or Java 25 (recommended)
 - PostgreSQL 13+
 - Maven 3.8+
+- Git
 
 ### 1. Database Setup
 
@@ -102,17 +142,34 @@ The application will start on `http://localhost:8080`
 
 ### 4. Database Migrations
 
-Flyway will automatically run migrations on startup. The initial schema creates:
+Flyway will automatically run migrations on startup. The migrations create:
 - All necessary tables
-- Default roles (CUSTOMER, ADMIN, DESIGNER)
-- Default product categories
+- Default roles (ROLE_CUSTOMER, ROLE_ADMIN, ROLE_DESIGNER)
+- **Default admin account** (see Admin Authentication section below)
 - Necessary indexes
+
+### 5. Admin Authentication
+
+**No default admin account is created.** For security reasons, admin accounts must be created manually during deployment.
+
+#### Deployment Strategy
+
+1. **First Deployment**: Technical manager registers as first admin via temporarily open endpoint
+2. **Add Business Owner**: Technical manager creates admin account for business owner via API
+3. **Ongoing Operations**: Both maintain admin access for their respective responsibilities
+
+**Recommended Approach:**
+- Technical manager: System maintenance, troubleshooting, database management
+- Business owner: Product management, orders, customer operations
+
+For detailed step-by-step deployment instructions, see [ADMIN_AUTHENTICATION_GUIDE.md](./ADMIN_AUTHENTICATION_GUIDE.md)
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login and get JWT token
+- `POST /api/auth/register` - Register new customer account
+- `POST /api/auth/login` - Login (admin or customer) and get JWT token
+- `POST /api/auth/register/admin` - Register new admin account (requires admin authentication)
 
 ### Products (Public)
 - `GET /api/products` - Get all products (paginated)
@@ -130,7 +187,7 @@ Flyway will automatically run migrations on startup. The initial schema creates:
 
 ### Example Requests
 
-#### Register User
+#### Register Customer
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
@@ -146,13 +203,37 @@ curl -X POST http://localhost:8080/api/auth/register \
   }'
 ```
 
-#### Login
+#### Login as Admin
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@hafsahsplace.com",
+    "password": "Admin@123"
+  }'
+```
+
+#### Login as Customer
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "jane@example.com",
     "password": "password123"
+  }'
+```
+
+#### Create New Admin (requires admin token)
+```bash
+curl -X POST http://localhost:8080/api/auth/register/admin \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN" \
+  -d '{
+    "firstName": "New",
+    "lastName": "Admin",
+    "email": "newadmin@hafsahsplace.com",
+    "password": "SecurePass123!",
+    "phoneNumber": "+234809876543"
   }'
 ```
 
@@ -225,11 +306,24 @@ export PAYSTACK_SECRET_KEY=your_paystack_secret
 
 ## Security Considerations
 
-1. **Change default JWT secret** - Generate a strong random secret for production
-2. **Use HTTPS** in production
-3. **Enable CORS properly** - Update CORS settings for your frontend domain
-4. **Secure Paystack keys** - Never commit API keys to version control
-5. **Database credentials** - Use environment variables or secrets management
+1. **Change default admin password** - The default admin password (`Admin@123`) must be changed immediately in production
+2. **Change default JWT secret** - Generate a strong random secret (at least 256 bits) for production
+3. **Use HTTPS** in production - Never use HTTP for authentication in production
+4. **Enable CORS properly** - Update CORS settings in `CorsConfig.java` for your frontend domain
+5. **Secure Paystack keys** - Never commit API keys to version control
+6. **Database credentials** - Use environment variables or secrets management
+7. **JWT Token Expiration** - Configure appropriate token expiration times
+8. **Rate Limiting** - Consider implementing rate limiting for authentication endpoints
+9. **Input Validation** - All user inputs are validated using Jakarta Bean Validation
+10. **Password Encryption** - All passwords are encrypted using BCrypt (strength 10)
+
+### Authentication Flow
+
+1. **Registration**: Users register via `/api/auth/register` and are automatically assigned the `ROLE_CUSTOMER` role
+2. **Login**: Users login via `/api/auth/login` and receive a JWT token
+3. **Authorization**: JWT token must be included in the `Authorization: Bearer <token>` header for protected routes
+4. **Admin Access**: Routes under `/api/admin/**` require `ROLE_ADMIN`
+5. **Admin Creation**: Only existing admins can create new admin accounts via `/api/auth/register/admin`
 
 ## License
 

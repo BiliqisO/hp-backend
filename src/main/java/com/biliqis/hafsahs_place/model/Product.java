@@ -1,10 +1,12 @@
 package com.biliqis.hafsahs_place.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -27,6 +29,8 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnoreProperties({"products", "hibernateLazyInitializer", "handler"})
+    @ToString.Exclude
     private Category category;
 
     @Column(nullable = false)
@@ -62,16 +66,22 @@ public class Product {
     @Column(name = "care_instructions", columnDefinition = "TEXT")
     private String careInstructions;
 
+    @Column(name = "stock_quantity")
+    private Integer stockQuantity;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @ToString.Exclude
     private Set<ProductImage> images = new HashSet<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @ToString.Exclude
     private Set<ProductVariant> variants = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
     @Builder.Default
+    @ToString.Exclude
     private Set<Review> reviews = new HashSet<>();
 
     @CreationTimestamp

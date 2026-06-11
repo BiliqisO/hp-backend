@@ -19,4 +19,6 @@ public interface CustomOrderRepository extends JpaRepository<CustomOrder, Long> 
     List<CustomOrder> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     Page<CustomOrder> findByStatus(CustomOrder.CustomOrderStatus status, Pageable pageable);
+
+    long countByStatus(CustomOrder.CustomOrderStatus status);
 }

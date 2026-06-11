@@ -1,5 +1,6 @@
 package com.biliqis.hafsahs_place.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     @Builder.Default
+    @JsonIgnore
     private Set<Product> products = new HashSet<>();
 
     @CreationTimestamp

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f6f1; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 32px auto; background: #ffffff; border-radius: 8px; overflow: hidden; }
+    .header { background: #1a1a1a; color: #ffffff; padding: 28px 32px; text-align: center; }
+    .header h1 { margin: 0; font-size: 22px; letter-spacing: 2px; }
+    .header p { margin: 8px 0 0; font-size: 13px; color: #ccc; letter-spacing: 1px; }
+    .body { padding: 32px; color: #333; }
+    .body h2 { font-size: 18px; margin-top: 0; }
+    .btn { display: inline-block; background: #1a1a1a; color: #fff !important; text-decoration: none; padding: 14px 32px; border-radius: 4px; font-size: 15px; margin: 24px 0; }
+    .footer { background: #f4f0eb; padding: 20px 32px; text-align: center; font-size: 12px; color: #888; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>HAFSAH'S PLACE</h1>
+    <p>ASOEBI · BRIDAL · PROM · CUSTOM DESIGNS</p>
+  </div>
+  <div class="body">
+    <h2>Welcome, <span th:text="${firstName}">Customer</span>!</h2>
+    <p>Thank you for creating an account with Hafsah's Place. We're thrilled to have you join our community of style-conscious fashion lovers across Lagos and beyond.</p>
+    <p>Here's what you can do with your account:</p>
+    <ul>
+      <li>Browse our curated Asoebi, Bridal, and Prom collections</li>
+      <li>Request custom designs tailored to your measurements</li>
+      <li>Track your orders from placement to delivery</li>
+      <li>Save your measurements for seamless repeat orders</li>
+    </ul>
+    <a th:href="${shopUrl}" class="btn">Start Shopping</a>
+  </div>
+  <div class="footer">
+    <p>Questions? Contact us at hello@hafsahsplace.com</p>
+    <p>&copy; 2026 Hafsah's Place · Lagos, Nigeria</p>
+  </div>
+</div>
+</body>
+</html>

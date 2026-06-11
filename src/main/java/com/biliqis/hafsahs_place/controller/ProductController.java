@@ -1,8 +1,10 @@
 package com.biliqis.hafsahs_place.controller;
 
 import com.biliqis.hafsahs_place.dto.ProductRequest;
+import com.biliqis.hafsahs_place.dto.ProductUpdateRequest;
 import com.biliqis.hafsahs_place.model.Product;
 import com.biliqis.hafsahs_place.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Products", description = "Browse, search, and manage products")
 @RestController
 @RequestMapping("/api/products")
 public class
@@ -99,8 +102,8 @@ ProductController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest request) {
+        Product updatedProduct = productService.updateProduct(id, request);
         return ResponseEntity.ok(updatedProduct);
     }
 

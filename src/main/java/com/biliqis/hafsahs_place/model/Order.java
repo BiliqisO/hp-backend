@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -27,6 +28,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     @Column(name = "order_number", nullable = false, unique = true, length = 50)
@@ -59,12 +61,24 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "coupon_code", length = 50)
+    private String couponCode;
+
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    @Column(name = "tracking_number", length = 100)
+    private String trackingNumber;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @ToString.Exclude
     private Set<OrderItem> orderItems = new HashSet<>();
 
     @OneToMany(mappedBy = "order")
     @Builder.Default
+    @ToString.Exclude
     private Set<Payment> payments = new HashSet<>();
 
     @CreationTimestamp

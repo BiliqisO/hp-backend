@@ -1,0 +1,934 @@
+{
+  "info": {
+    "_postman_id": "hafsahs-place-api-v2",
+    "name": "Hafsah's Place API",
+    "description": "Complete API collection — Phases 1–9. Import alongside the Local or Production environment file.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",       "value": "http://localhost:8080", "type": "string" },
+    { "key": "adminToken",    "value": "", "type": "string" },
+    { "key": "customerToken", "value": "", "type": "string" },
+    { "key": "refreshToken",  "value": "", "type": "string" },
+    { "key": "orderId",       "value": "", "type": "string" },
+    { "key": "orderNumber",   "value": "", "type": "string" },
+    { "key": "productId",     "value": "1", "type": "string" },
+    { "key": "variantId",     "value": "", "type": "string" },
+    { "key": "cartItemId",    "value": "", "type": "string" },
+    { "key": "couponId",      "value": "", "type": "string" },
+    { "key": "customOrderId", "value": "", "type": "string" },
+    { "key": "reviewId",      "value": "", "type": "string" },
+    { "key": "userId",        "value": "", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register Customer",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  var d = pm.response.json();",
+            "  pm.collectionVariables.set('customerToken', d.token);",
+            "  pm.collectionVariables.set('refreshToken', d.refreshToken);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"08012345678\",\n  \"address\": \"123 Main Street\",\n  \"city\": \"Lagos\",\n  \"state\": \"Lagos\",\n  \"country\": \"Nigeria\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          }
+        },
+        {
+          "name": "Login - Customer",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 200) {",
+            "  var d = pm.response.json();",
+            "  pm.collectionVariables.set('customerToken', d.token);",
+            "  pm.collectionVariables.set('refreshToken', d.refreshToken);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"Password123!\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Login - Admin",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 200) {",
+            "  var d = pm.response.json();",
+            "  pm.collectionVariables.set('adminToken', d.token);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@hafsahsplace.com\",\n  \"password\": \"admin123456\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 200) {",
+            "  var d = pm.response.json();",
+            "  pm.collectionVariables.set('customerToken', d.token);",
+            "  pm.collectionVariables.set('refreshToken', d.refreshToken);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","auth","logout"] }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["api","auth","forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"PASTE_RESET_TOKEN_FROM_EMAIL\",\n  \"newPassword\": \"NewPassword123!\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["api","auth","reset-password"] }
+          }
+        },
+        {
+          "name": "Register Admin (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"newadmin@hafsahsplace.com\",\n  \"password\": \"AdminPass123!\",\n  \"firstName\": \"New\",\n  \"lastName\": \"Admin\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register/admin", "host": ["{{baseUrl}}"], "path": ["api","auth","register","admin"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "👤 User Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api","users","me"] }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Janet\",\n  \"phoneNumber\": \"09087654321\",\n  \"city\": \"Abuja\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api","users","me"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"NewPassword456!\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/me/change-password", "host": ["{{baseUrl}}"], "path": ["api","users","me","change-password"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📦 Products - Public",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products?page=0&size=12", "host": ["{{baseUrl}}"], "path": ["api","products"], "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "12" }] }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products/search?q=asoebi&page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","products","search"], "query": [{ "key": "q", "value": "asoebi" }, { "key": "page", "value": "0" }, { "key": "size", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get Products by Category",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products/category/1?page=0&size=12", "host": ["{{baseUrl}}"], "path": ["api","products","category","1"] }
+          }
+        },
+        {
+          "name": "Get Featured Products",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products/featured", "host": ["{{baseUrl}}"], "path": ["api","products","featured"] }
+          }
+        },
+        {
+          "name": "Get Latest Products",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products/latest", "host": ["{{baseUrl}}"], "path": ["api","products","latest"] }
+          }
+        },
+        {
+          "name": "Get Product Variants",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}/variants?availableOnly=true", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}","variants"], "query": [{ "key": "availableOnly", "value": "true" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🔧 Products - Admin",
+      "item": [
+        {
+          "name": "Create Product",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  pm.collectionVariables.set('productId', pm.response.json().id);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Burgundy Asoebi Set\",\n  \"description\": \"Elegant Asoebi fabric set for events\",\n  \"categoryId\": 1,\n  \"basePrice\": 45000,\n  \"isAvailable\": true,\n  \"isFeatured\": false,\n  \"isCustomizable\": true,\n  \"slug\": \"burgundy-asoebi-set\",\n  \"fabricType\": \"George\",\n  \"stockQuantity\": 20\n}" },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"basePrice\": 48000,\n  \"isFeatured\": true,\n  \"stockQuantity\": 15\n}" },
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Add Product Variant",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  pm.collectionVariables.set('variantId', pm.response.json().id);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"size\": \"M\",\n  \"color\": \"Burgundy\",\n  \"additionalPrice\": 2000,\n  \"stockQuantity\": 10,\n  \"sku\": \"BAS-M-BUR\",\n  \"isAvailable\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}/variants", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}","variants"] }
+          }
+        },
+        {
+          "name": "Update Product Variant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"stockQuantity\": 5,\n  \"isAvailable\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}/variants/{{variantId}}", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}","variants","{{variantId}}"] }
+          }
+        },
+        {
+          "name": "Delete Product Variant",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}/variants/{{variantId}}", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}","variants","{{variantId}}"] }
+          }
+        },
+        {
+          "name": "Upload Product Image",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": { "mode": "formdata", "formdata": [
+              { "key": "file", "type": "file", "src": "" },
+              { "key": "isPrimary", "value": "true", "type": "text" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}/images", "host": ["{{baseUrl}}"], "path": ["api","products","{{productId}}","images"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🗂 Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api","categories","1"] }
+          }
+        },
+        {
+          "name": "Create Category (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Bridesmaid\",\n  \"description\": \"Bridesmaid dresses and sets\",\n  \"slug\": \"bridesmaid\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "Update Category (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Bridesmaid Dresses\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api","categories","1"] }
+          }
+        },
+        {
+          "name": "Delete Category (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api","categories","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🛒 Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] }
+          }
+        },
+        {
+          "name": "Add Item to Cart",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  pm.collectionVariables.set('cartItemId', pm.response.json().id);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/cart/items", "host": ["{{baseUrl}}"], "path": ["api","cart","items"] }
+          }
+        },
+        {
+          "name": "Add Item with Variant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": {{productId}},\n  \"productVariantId\": {{variantId}},\n  \"quantity\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/cart/items", "host": ["{{baseUrl}}"], "path": ["api","cart","items"] }
+          }
+        },
+        {
+          "name": "Update Cart Item Quantity",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}?quantity=3", "host": ["{{baseUrl}}"], "path": ["api","cart","items","{{cartItemId}}"], "query": [{ "key": "quantity", "value": "3" }] }
+          }
+        },
+        {
+          "name": "Remove Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}", "host": ["{{baseUrl}}"], "path": ["api","cart","items","{{cartItemId}}"] }
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "❤️ Wishlist",
+      "item": [
+        {
+          "name": "Get Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/wishlist", "host": ["{{baseUrl}}"], "path": ["api","wishlist"] }
+          }
+        },
+        {
+          "name": "Add to Wishlist",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/wishlist/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api","wishlist","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Remove from Wishlist",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/wishlist/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api","wishlist","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Check if in Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/wishlist/{{productId}}/check", "host": ["{{baseUrl}}"], "path": ["api","wishlist","{{productId}}","check"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🏷 Coupons",
+      "item": [
+        {
+          "name": "Validate Coupon (Preview Discount)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/coupons/validate?code=SAVE20&orderTotal=50000", "host": ["{{baseUrl}}"], "path": ["api","coupons","validate"], "query": [{ "key": "code", "value": "SAVE20" }, { "key": "orderTotal", "value": "50000" }] }
+          }
+        },
+        {
+          "name": "Create Coupon (Admin)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  pm.collectionVariables.set('couponId', pm.response.json().id);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"SAVE20\",\n  \"type\": \"PERCENTAGE\",\n  \"value\": 20,\n  \"minOrderAmount\": 10000,\n  \"maxUses\": 100,\n  \"expiresAt\": \"2027-12-31T23:59:59\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/admin/coupons", "host": ["{{baseUrl}}"], "path": ["api","admin","coupons"] }
+          }
+        },
+        {
+          "name": "Create Fixed Coupon (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"OFF5000\",\n  \"type\": \"FIXED_AMOUNT\",\n  \"value\": 5000,\n  \"minOrderAmount\": 25000\n}" },
+            "url": { "raw": "{{baseUrl}}/api/admin/coupons", "host": ["{{baseUrl}}"], "path": ["api","admin","coupons"] }
+          }
+        },
+        {
+          "name": "List All Coupons (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/coupons?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","admin","coupons"] }
+          }
+        },
+        {
+          "name": "Deactivate Coupon (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/coupons/{{couponId}}/deactivate", "host": ["{{baseUrl}}"], "path": ["api","admin","coupons","{{couponId}}","deactivate"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📋 Orders",
+      "item": [
+        {
+          "name": "Place Order (no coupon)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  var d = pm.response.json();",
+            "  pm.collectionVariables.set('orderId', d.id);",
+            "  pm.collectionVariables.set('orderNumber', d.orderNumber);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    { \"productId\": {{productId}}, \"quantity\": 1 }\n  ],\n  \"shippingAddress\": \"15 Broad Street\",\n  \"shippingCity\": \"Lagos\",\n  \"shippingState\": \"Lagos\",\n  \"shippingCountry\": \"Nigeria\",\n  \"shippingPhone\": \"08012345678\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "Place Order (with coupon)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    { \"productId\": {{productId}}, \"quantity\": 2 }\n  ],\n  \"shippingAddress\": \"15 Broad Street\",\n  \"shippingCity\": \"Lagos\",\n  \"shippingState\": \"Lagos\",\n  \"shippingCountry\": \"Nigeria\",\n  \"shippingPhone\": \"08012345678\",\n  \"couponCode\": \"SAVE20\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "Place Order (with variant)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"productVariantId\": {{variantId}},\n      \"quantity\": 1,\n      \"specialInstructions\": \"Please wrap carefully\"\n    }\n  ],\n  \"shippingAddress\": \"15 Broad Street\",\n  \"shippingCity\": \"Lagos\",\n  \"shippingState\": \"Lagos\",\n  \"shippingPhone\": \"08012345678\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["api","orders","{{orderId}}"] }
+          }
+        },
+        {
+          "name": "Track Order (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/orders/track/{{orderNumber}}", "host": ["{{baseUrl}}"], "path": ["api","orders","track","{{orderNumber}}"] }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/{{orderId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api","orders","{{orderId}}","cancel"] }
+          }
+        },
+        {
+          "name": "Get All Orders (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/admin/all?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","orders","admin","all"] }
+          }
+        },
+        {
+          "name": "Get Orders by Status (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/admin/status/PENDING?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","orders","admin","status","PENDING"] }
+          }
+        },
+        {
+          "name": "Confirm Order (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/admin/{{orderId}}/status?status=CONFIRMED", "host": ["{{baseUrl}}"], "path": ["api","orders","admin","{{orderId}}","status"], "query": [{ "key": "status", "value": "CONFIRMED" }] }
+          }
+        },
+        {
+          "name": "Ship Order (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/admin/{{orderId}}/status?status=SHIPPED&trackingNumber=GIG123456789", "host": ["{{baseUrl}}"], "path": ["api","orders","admin","{{orderId}}","status"], "query": [{ "key": "status", "value": "SHIPPED" }, { "key": "trackingNumber", "value": "GIG123456789" }] }
+          }
+        },
+        {
+          "name": "Deliver Order (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/orders/admin/{{orderId}}/status?status=DELIVERED", "host": ["{{baseUrl}}"], "path": ["api","orders","admin","{{orderId}}","status"], "query": [{ "key": "status", "value": "DELIVERED" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "✂️ Custom Orders",
+      "item": [
+        {
+          "name": "Submit Custom Order",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  pm.collectionVariables.set('customOrderId', pm.response.json().id);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"designDescription\": \"A floor-length Asoebi gown with a sweetheart neckline, puffed sleeves, and intricate embroidery on the bodice. Fabric: Blue George. Event: Wedding in December.\",\n  \"eventDate\": \"2026-12-15\",\n  \"budget\": 150000\n}" },
+            "url": { "raw": "{{baseUrl}}/api/custom-orders", "host": ["{{baseUrl}}"], "path": ["api","custom-orders"] }
+          }
+        },
+        {
+          "name": "Get My Custom Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/custom-orders?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","custom-orders"] }
+          }
+        },
+        {
+          "name": "Get Custom Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/custom-orders/{{customOrderId}}", "host": ["{{baseUrl}}"], "path": ["api","custom-orders","{{customOrderId}}"] }
+          }
+        },
+        {
+          "name": "Get All Custom Orders (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/custom-orders/admin/all?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","custom-orders","admin","all"] }
+          }
+        },
+        {
+          "name": "Update Custom Order Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/custom-orders/admin/{{customOrderId}}/status?status=IN_REVIEW", "host": ["{{baseUrl}}"], "path": ["api","custom-orders","admin","{{customOrderId}}","status"], "query": [{ "key": "status", "value": "IN_REVIEW" }] }
+          }
+        },
+        {
+          "name": "Set Quote (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"estimatedPrice\": 120000,\n  \"finalPrice\": 135000\n}" },
+            "url": { "raw": "{{baseUrl}}/api/custom-orders/admin/{{customOrderId}}/quote", "host": ["{{baseUrl}}"], "path": ["api","custom-orders","admin","{{customOrderId}}","quote"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "💳 Payments",
+      "item": [
+        {
+          "name": "Initialize Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"orderId\": {{orderId}}\n}" },
+            "url": { "raw": "{{baseUrl}}/api/payments/initialize", "host": ["{{baseUrl}}"], "path": ["api","payments","initialize"] }
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/payments/verify/PAYSTACK_REFERENCE_HERE", "host": ["{{baseUrl}}"], "path": ["api","payments","verify","PAYSTACK_REFERENCE_HERE"] }
+          }
+        },
+        {
+          "name": "Webhook (Paystack → Server)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Paystack-Signature", "value": "HMAC_SIGNATURE_HERE" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"event\": \"charge.success\",\n  \"data\": {\n    \"reference\": \"PAYSTACK_REFERENCE_HERE\",\n    \"status\": \"success\",\n    \"amount\": 4500000\n  }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/payments/webhook", "host": ["{{baseUrl}}"], "path": ["api","payments","webhook"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "⭐ Reviews",
+      "item": [
+        {
+          "name": "Get Product Reviews (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/reviews/product/{{productId}}?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","reviews","product","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Add Review",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.response.code === 201) {",
+            "  pm.collectionVariables.set('reviewId', pm.response.json().id);",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": {{productId}},\n  \"rating\": 5,\n  \"comment\": \"Absolutely stunning fabric and perfect fit! The attention to detail is incredible.\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews", "host": ["{{baseUrl}}"], "path": ["api","reviews"] }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Great quality, slight delay in delivery but overall very happy.\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["api","reviews","{{reviewId}}"] }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["api","reviews","{{reviewId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📏 Measurements",
+      "item": [
+        {
+          "name": "Get My Measurements",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/measurements", "host": ["{{baseUrl}}"], "path": ["api","measurements"] }
+          }
+        },
+        {
+          "name": "Save Measurements",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"bust\": 92.5,\n  \"waist\": 74.0,\n  \"hips\": 98.0,\n  \"shoulderWidth\": 38.5,\n  \"armLength\": 58.0,\n  \"dressLength\": 140.0,\n  \"neckCircumference\": 34.0,\n  \"unit\": \"cm\",\n  \"notes\": \"Prefer 2cm ease on waist\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/measurements", "host": ["{{baseUrl}}"], "path": ["api","measurements"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🔑 Admin — Dashboard & Users",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/dashboard", "host": ["{{baseUrl}}"], "path": ["api","admin","dashboard"] }
+          }
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","admin","users"] }
+          }
+        },
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users?search=jane&page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","admin","users"], "query": [{ "key": "search", "value": "jane" }] }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","admin","users","{{userId}}"] }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users/{{userId}}/deactivate", "host": ["{{baseUrl}}"], "path": ["api","admin","users","{{userId}}","deactivate"] }
+          }
+        },
+        {
+          "name": "Reactivate User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users/{{userId}}/reactivate", "host": ["{{baseUrl}}"], "path": ["api","admin","users","{{userId}}","reactivate"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📣 Testimonials & FAQs",
+      "item": [
+        {
+          "name": "Get All Testimonials",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/testimonials", "host": ["{{baseUrl}}"], "path": ["api","testimonials"] }
+          }
+        },
+        {
+          "name": "Get All FAQs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/faqs", "host": ["{{baseUrl}}"], "path": ["api","faqs"] }
+          }
+        },
+        {
+          "name": "Create Testimonial (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"customerName\": \"Adaeze Okonkwo\",\n  \"content\": \"My bridal look was absolutely breathtaking. Hafsah's Place delivered beyond my expectations!\",\n  \"rating\": 5,\n  \"isVisible\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/testimonials", "host": ["{{baseUrl}}"], "path": ["api","testimonials"] }
+          }
+        },
+        {
+          "name": "Create FAQ (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question\": \"How long does a custom order take?\",\n  \"answer\": \"Custom orders typically take 4–6 weeks depending on complexity and fabric availability.\",\n  \"sortOrder\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/faqs", "host": ["{{baseUrl}}"], "path": ["api","faqs"] }
+          }
+        }
+      ]
+    }
+
+  ]
+}

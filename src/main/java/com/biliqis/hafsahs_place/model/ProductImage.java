@@ -1,10 +1,12 @@
 package com.biliqis.hafsahs_place.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,8 @@ public class ProductImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnoreProperties({"images", "variants", "reviews", "hibernateLazyInitializer", "handler"})
+    @ToString.Exclude
     private Product product;
 
     @Column(name = "image_url", nullable = false, length = 500)

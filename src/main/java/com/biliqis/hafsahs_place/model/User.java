@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -67,14 +68,17 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Builder.Default
+    @ToString.Exclude
     private Set<Measurement> measurements = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
+    @ToString.Exclude
     private Set<Order> orders = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
+    @ToString.Exclude
     private Set<Review> reviews = new HashSet<>();
 
     @CreationTimestamp

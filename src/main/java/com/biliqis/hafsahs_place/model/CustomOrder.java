@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,6 +32,7 @@ public class CustomOrder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     @Column(name = "order_number", nullable = false, unique = true, length = 50)
@@ -38,6 +40,7 @@ public class CustomOrder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
 
     @Column(name = "design_description", nullable = false, columnDefinition = "TEXT")
@@ -49,6 +52,7 @@ public class CustomOrder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "measurement_id")
+    @ToString.Exclude
     private Measurement measurement;
 
     @Column(name = "preferred_fabric")
@@ -79,6 +83,7 @@ public class CustomOrder {
 
     @OneToMany(mappedBy = "customOrder")
     @Builder.Default
+    @ToString.Exclude
     private Set<Payment> payments = new HashSet<>();
 
     @CreationTimestamp

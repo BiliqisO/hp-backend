@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f6f1; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 32px auto; background: #ffffff; border-radius: 8px; overflow: hidden; }
+    .header { background: #1a1a1a; color: #ffffff; padding: 28px 32px; text-align: center; }
+    .header h1 { margin: 0; font-size: 22px; letter-spacing: 2px; }
+    .body { padding: 32px; color: #333; }
+    .body h2 { font-size: 18px; margin-top: 0; }
+    .order-box { background: #f4f0eb; border-radius: 6px; padding: 20px; margin: 24px 0; }
+    .order-box p { margin: 6px 0; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th { background: #1a1a1a; color: #fff; padding: 10px 12px; text-align: left; font-size: 13px; }
+    td { padding: 10px 12px; font-size: 14px; border-bottom: 1px solid #eee; }
+    .total-row td { font-weight: bold; border-top: 2px solid #ccc; }
+    .footer { background: #f4f0eb; padding: 20px 32px; text-align: center; font-size: 12px; color: #888; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>HAFSAH'S PLACE</h1>
+  </div>
+  <div class="body">
+    <h2>Order Confirmed!</h2>
+    <p>Hi <span th:text="${firstName}">Customer</span>, thank you for your order. We've received it and will begin processing shortly.</p>
+
+    <div class="order-box">
+      <p><strong>Order Number:</strong> <span th:text="${orderNumber}">HP-20260101-XXXXXX</span></p>
+      <p><strong>Status:</strong> Confirmed</p>
+      <p><strong>Shipping to:</strong>
+        <span th:text="${shippingAddress}">123 Street</span>,
+        <span th:text="${shippingCity}">Lagos</span>,
+        <span th:text="${shippingState}">Lagos State</span>
+      </p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${items}">
+          <td th:text="${item.productName}">Product Name</td>
+          <td th:text="${item.quantity}">1</td>
+          <td th:text="'₦' + ${item.totalPrice}">₦0.00</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="2">Total</td>
+          <td th:text="'₦' + ${totalAmount}">₦0.00</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:24px;">
+      You can track your order at any time using your order number:
+      <a th:href="${frontendUrl + '/orders/' + orderNumber}" style="color:#1a1a1a;">
+        <span th:text="${orderNumber}">HP-XXXXXXXX</span>
+      </a>
+    </p>
+  </div>
+  <div class="footer">
+    <p>Questions? Reply to this email or contact us at hello@hafsahsplace.com</p>
+    <p>&copy; 2026 Hafsah's Place · Lagos, Nigeria</p>
+  </div>
+</div>
+</body>
+</html>

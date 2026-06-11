@@ -1,0 +1,32 @@
+2026-04-29 21:23:40 - [AUTH_SUCCESS] Timestamp: 2026-04-29 21:23:40 | Action: register | User: aisha@test.com | Result: Success
+2026-04-29 21:24:21 - [AUTH_SUCCESS] Timestamp: 2026-04-29 21:24:21 | Action: login | User: aisha@test.com | Result: Success
+2026-04-29 21:26:17 - [AUTH_FAILURE] Timestamp: 2026-04-29 21:26:17 | Action: login | User: admin@hafsahsplace.com | Reason: Bad credentials
+2026-04-29 21:30:36 - [AUTH_FAILURE] Timestamp: 2026-04-29 21:30:36 | Action: login | User: admin@hafsahsplace.com | Reason: Bad credentials
+2026-04-29 21:30:47 - [AUTH_FAILURE] Timestamp: 2026-04-29 21:30:47 | Action: login | User: admin@hafsahsplace.com | Reason: Bad credentials
+2026-04-29 21:34:19 - [AUTH_SUCCESS] Timestamp: 2026-04-29 21:34:19 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:34:34 - [ADMIN_OPERATION] Timestamp: 2026-04-29 21:34:34 | Action: createProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 21:34:34 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 21:34:34 | Action: createProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:44:51 - [AUTH_SUCCESS] Timestamp: 2026-04-29 21:44:51 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:51:15 - [AUTH_SUCCESS] Timestamp: 2026-04-29 21:51:15 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:54:47 - [ADMIN_OPERATION] Timestamp: 2026-04-29 21:54:47 | Action: createProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 21:54:47 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 21:54:47 | Action: createProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:57:11 - [AUTH_SUCCESS] Timestamp: 2026-04-29 21:57:11 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:57:38 - [ADMIN_OPERATION] Timestamp: 2026-04-29 21:57:38 | Action: updateProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 21:57:38 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 21:57:38 | Action: updateProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:57:44 - [ADMIN_OPERATION] Timestamp: 2026-04-29 21:57:44 | Action: updateProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 21:57:44 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 21:57:44 | Action: updateProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 21:57:52 - [ADMIN_OPERATION] Timestamp: 2026-04-29 21:57:52 | Action: updateProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 21:57:52 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 21:57:52 | Action: updateProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:01:57 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:01:57 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:04:27 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:04:27 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:07:15 - [ADMIN_OPERATION] Timestamp: 2026-04-29 22:07:15 | Action: updateProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 22:07:15 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 22:07:15 | Action: updateProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:12:48 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:12:48 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:13:47 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:13:47 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:14:46 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:14:46 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:20:17 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:20:17 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:21:12 - [ADMIN_OPERATION] Timestamp: 2026-04-29 22:21:12 | Action: updateProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 22:21:12 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 22:21:12 | Action: updateProduct | Admin: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:31:22 - [AUTH_SUCCESS] Timestamp: 2026-04-29 22:31:22 | Action: login | User: admin@hafsahsplace.com | Result: Success
+2026-04-29 22:32:15 - [ADMIN_OPERATION] Timestamp: 2026-04-29 22:32:15 | Action: updateProduct | Admin: admin@hafsahsplace.com | Target: Product
+2026-04-29 22:32:15 - [ADMIN_SUCCESS] Timestamp: 2026-04-29 22:32:15 | Action: updateProduct | Admin: admin@hafsahsplace.com | Result: Success

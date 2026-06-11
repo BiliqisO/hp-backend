@@ -5,7 +5,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +20,9 @@ public class PaystackService {
 
     @Value("${paystack.api-url}")
     private String apiUrl;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -33,6 +39,7 @@ public class PaystackService {
         body.put("amount", amount.multiply(BigDecimal.valueOf(100)).longValue());
         body.put("reference", reference);
         body.put("currency", "NGN");
+        body.put("callback_url", frontendUrl + "/payment/verify");
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
@@ -50,5 +57,26 @@ public class PaystackService {
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
         return response.getBody();
+    }
+
+    /**
+     * Verifies that a webhook payload came from Paystack by computing
+     * HMAC-SHA512 of the raw body with the secret key and comparing it
+     * to the X-Paystack-Signature header value.
+     */
+    public boolean verifyWebhookSignature(String payload, String signature) {
+        if (signature == null || payload == null) return false;
+        try {
+            Mac mac = Mac.getInstance("HmacSHA512");
+            mac.init(new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
+            byte[] hash = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hash) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString().equals(signature);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
