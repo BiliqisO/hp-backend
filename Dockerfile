@@ -1,15 +1,14 @@
 # ─── Stage 1: Build ───────────────────────────────────────────────────────────
-FROM eclipse-temurin:17-jdk AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy wrapper + pom first so dependency layer is cached
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B --no-transfer-progress
+# Copy pom first so dependency layer is cached
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B --no-transfer-progress
 
 # Copy source and build
 COPY src ./src
-RUN ./mvnw clean package -DskipTests -B --no-transfer-progress
+RUN mvn clean package -DskipTests -B --no-transfer-progress
 
 # ─── Stage 2: Run ─────────────────────────────────────────────────────────────
 FROM eclipse-temurin:17-jre
