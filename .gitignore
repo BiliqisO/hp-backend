@@ -38,3 +38,4 @@ build/
 .env.production
 application-local.properties
 application-prod.properties
+logs/
